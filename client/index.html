@@ -1,0 +1,458 @@
+<canvas id="ctx" width="500" height="500" style="border:1px solid #000000;"></canvas>
+
+<input style = "position:absolute; top: 126px;left: 162px;width: 234px; height: 29px;font-size:22; font-family: verdana; display:none" id = "usernameBox"></input>
+<input style = "position:absolute; top: 171px;left: 162px;width: 235px; height: 29px;font-size:22; font-family: verdana; display:none" id = "passwordBox" type = "password"></input>
+
+<input id = "chatbar" style = "position:absolute; top:478px; left: 85px; width: 320px; background-color: #003366;border:0px; outline: none; color:white;display:none" maxlength = "128"></input>
+
+<script src="https://cdn.socket.io/socket.io-1.4.5.js"></script>
+<script>
+    var ctx = document.getElementById("ctx").getContext("2d");
+    ctx.font = '30px Arial';
+   
+    var socket = io();
+
+    var canPressKey = true;
+    var canMouse = true;
+
+    var sockets = [];
+    var myID = 0;
+
+    var gameScene = 0;
+	
+	var frames = 0;
+	var drawState = 1;
+	
+	var loadingText = "Logging in";
+	
+	var usernameBox = document.getElementById("usernameBox");
+	var passwordBox = document.getElementById("passwordBox");
+	
+	var gameChatbar = document.getElementById("chatbar");
+	
+	var loadingStrip = new Image();
+	loadingStrip.src = "client/loadingStrip_strip10.png";
+	
+    // 0 = startScreen
+    // 1 = loginScreen
+    // 2 = loading
+    // 3 = serverSelector
+    // 4 = game
+
+    var startScreen = new Image();
+    startScreen.src = "client/mainmenu.png";
+    
+    var loginScreen = new Image();
+    loginScreen.src = "client/loginmenu.png";
+
+    var startBtn = {};
+    startBtn.unpressed = new Image();
+    startBtn.unpressed.src = "client/startBtn1.png";
+    startBtn.pressed = new Image();
+    startBtn.pressed.src = "client/startBtn2.png";
+    startBtn.state = 0;
+    startBtn.xPos = 250 - 191 / 2 - 10;
+    startBtn.yPos = 250;
+	
+	var startBtn2 = {};
+    startBtn2.unpressed = new Image();
+    startBtn2.unpressed.src = "client/startBtn1.png";
+    startBtn2.pressed = new Image();
+    startBtn2.pressed.src = "client/startBtn2.png";
+    startBtn2.state = 0;
+    startBtn2.xPos = 250 - 191 / 2 - 10;
+    startBtn2.yPos = 250;
+	
+	town1 = new Image();
+	town2 = new Image();
+	town3 = new Image();
+	town4 = new Image();
+	town5 = new Image();
+	town6 = new Image();
+	town7 = new Image();
+	town8 = new Image();
+	town9 = new Image();
+	town10 = new Image();
+	
+	town1.src = "client/town1.png";
+	town2.src = "client/town2.png";
+	town3.src = "client/town3.png";
+	town4.src = "client/town4.png";
+	town5.src = "client/town5.png";
+	town6.src = "client/town6.png";
+	town7.src = "client/town7.png";
+	town8.src = "client/town8.png";
+	town9.src = "client/town9.png";
+	town10.src = "client/town10.png";
+	
+	blue_puffle = new Image();
+	blue_puffle.src = "client/blue_puffle.png";
+	
+	red_puffle = new Image();
+	red_puffle.src = "client/red_puffle.png";
+	
+	var chatbar = new Image();
+	chatbar.src = "client/chatbar.png";
+	
+	var gradient = new Image();
+	gradient.src = "client/gradient.png";
+	
+	arrowKeys = {
+		keyLeft: false,
+		keyRight: false,
+		keyUp: false,
+		keyDown: false
+	};
+	
+	var animationFrame = 0;
+	var animationFrames = 0;
+	
+	var e1 = new Image();
+	e1.src = "client/e1.png";
+	
+	var e2 = new Image();
+	e2.src = "client/e2.png";
+	
+	var e3 = new Image();
+	e3.src = "client/e3.png";
+	
+	var e4 = new Image();
+	e4.src = "client/e4.png";
+	
+	var e5 = new Image();
+	e5.src = "client/e5.png";
+	
+	var e6 = new Image();
+	e6.src = "client/e6.png";
+		
+	var e7 = new Image();
+	e7.src = "client/e7.png";
+	
+	var e8 = new Image();
+	e8.src = "client/e8.png";
+	
+	var e9 = new Image();
+	e9.src = "client/e9.png";
+	
+	var e0 = new Image();
+	e0.src = "client/e0.png";
+	
+	var eu = new Image();
+	eu.src = "client/eu.png";
+	
+	var ew = new Image();
+	ew.src = "client/ew.png";
+	
+	var eq = new Image();
+	eq.src = "client/eq.png";
+	
+	var ez = new Image();
+	ez.src = "client/ez.png";
+	
+	var ek = new Image();
+	ek.src = "client/ek.png";
+	
+	var eo = new Image();
+	eo.src = "client/eo.png";
+	
+	var ec = new Image();
+	ec.src = "client/ec.png";
+	
+	var ei = new Image();
+	ei.src = "client/ei.png";
+	
+	var ep = new Image();
+	ep.src = "client/ep.png";
+	
+	var ed = new Image();
+	ed.src = "client/ed.png";
+	
+	var en = new Image();
+	en.src = "client/en.png";
+
+	var eg = new Image();
+	eg.src = "client/eg.png";
+	
+	var el = new Image();
+	el.src = "client/el.png";
+	
+	var ef = new Image();
+	ef.src = "client/ef.png";
+	
+	var eh = new Image();
+	eh.src = "client/eh.png";
+	
+	var slash = new Image();
+	slash.src = "client/slash.png";
+	
+	var exclamation = new Image();
+	exclamation.src = "client/1.png";
+	
+	var eb = new Image();
+	eb.src = "client/eb.png";
+	
+	var em = new Image();
+	em.src = "client/em.png";
+	
+	var et = new Image();
+	et.src = "client/et.png";
+	
+    socket.on('newPositions',function(data){
+        ctx.clearRect(0,0,500,500);
+		frames++;
+		if(frames%50==0) { drawState++; frames = 0; }
+		if(drawState > 10) drawState = 1;
+
+        if(gameScene == 0) {
+            ctx.drawImage(startScreen, 0, 0);
+            if(startBtn.state == 0) ctx.drawImage(startBtn.unpressed, startBtn.xPos, startBtn.yPos);
+            if(startBtn.state == 1) ctx.drawImage(startBtn.pressed, startBtn.xPos, startBtn.yPos);
+        }
+
+        if(gameScene == 1) {
+            ctx.drawImage(loginScreen, 0, 0);
+			if(startBtn2.state == 0) ctx.drawImage(startBtn2.unpressed, startBtn2.xPos, startBtn2.yPos);
+            if(startBtn2.state == 1) ctx.drawImage(startBtn2.pressed, startBtn2.xPos, startBtn2.yPos);
+        }
+		
+		if(gameScene == 2) {
+			ctx.drawImage(gradient, 0, 0);
+			
+			animationFrames += 5;
+			if(animationFrames == 5) {
+				animationFrame++;
+				animationFrames = 0;
+			}
+			
+			if(animationFrame >= 10) animationFrame = 0;
+			
+			ctx.drawImage(loadingStrip, 48 * animationFrame, 0, 48, 48, 250 - 24, 250 - 48, 48, 48);
+			ctx.font = "20px Arial";
+			ctx.fillStyle = "white";
+			ctx.fillText(loadingText, 250 - loadingText.length * 5, 300);
+		}
+		
+        if(gameScene == 4) {
+			if(drawState == 1) ctx.drawImage(town1, 0, 0);
+			if(drawState == 2) ctx.drawImage(town2, 0, 0);
+			if(drawState == 3) ctx.drawImage(town3, 0, 0);
+			if(drawState == 4) ctx.drawImage(town4, 0, 0);
+			if(drawState == 5) ctx.drawImage(town5, 0, 0);
+			if(drawState == 6) ctx.drawImage(town6, 0, 0);
+			if(drawState == 7) ctx.drawImage(town7, 0, 0);
+			if(drawState == 8) ctx.drawImage(town8, 0, 0);
+			if(drawState == 9) ctx.drawImage(town9, 0, 0);
+			if(drawState == 10) ctx.drawImage(town10, 0, 0);
+			
+            for(var i = 0 ; i < data.length; i++) {
+                if(data[i] != undefined) {
+                    var id = data[i].id;
+
+                    if(sockets[id] != undefined) {
+                        sockets[id].x = data[i].x;
+                        sockets[id].y = data[i].y;
+						sockets[id].id = data[i].id;
+						
+						sockets[id].loggedIn = data[i].loggedIn;
+						sockets[id].username = data[i].username;
+						sockets[id].army = data[i].army;
+						sockets[id].color = data[i].color;
+						sockets[id].item = data[i].item;
+						sockets[id].server = data[i].server;
+						sockets[id].place = data[i].place;
+                    }
+
+                    if(data[i].loggedIn == true) {
+						if(data[i].color == "blue") {
+							ctx.drawImage(blue_puffle, data[i].x, data[i].y);
+						}
+						
+						if(data[i].color == "purple") {
+							ctx.drawImage(purple_puffle, data[i].x, data[i].y);
+						}
+						
+						if(data[i].color == "pink") {
+							ctx.drawImage(pink_puffle, data[i].x, data[i].y);
+						}
+						
+						if(data[i].color == "orange") {
+							ctx.drawImage(orange_puffle, data[i].x, data[i].y);
+						}
+						
+						if(data[i].color == "white") {
+							ctx.drawImage(white_puffle, data[i].x, data[i].y);
+						}
+						
+						if(data[i].color == "yellow") {
+							ctx.drawImage(yellow_puffle, data[i].x, data[i].y);
+						}
+						
+						if(data[i].color == "red") {
+							ctx.drawImage(red_puffle, data[i].x, data[i].y);
+						}
+						
+						if(data[i].color == "green") {
+							ctx.drawImage(green_puffle, data[i].x, data[i].y);
+						}
+						
+						if(data[i].color == "brown") {
+							ctx.drawImage(brown_puffle, data[i].x, data[i].y);
+						}
+						
+						ctx.fillStyle = "black";
+						ctx.font = "bold 11px Arial"
+						ctx.fillText(data[i].username, data[i].x - 10, data[i].y + 40);
+						
+						if(data[i].army != "") {
+							ctx.font = "8px Arial"
+							ctx.fillText(data[i].army, data[i].x - 10, data[i].y + 50);
+						}
+						
+						ctx.font = "bold 9px Arial";
+						
+						if(data[i].message != "") {
+							ctx.fillStyle = "white";
+							ctx.globalAlpha = 0.8;
+							ctx.fillRect(data[i].x - 5, data[i].y - 24, data[i].message.length * 8 + 20, 21);
+							ctx.globalAlpha = 1;
+						}
+						
+						ctx.fillStyle = "black";
+						
+						if(data[i].message != "e1" && data[i].message != "e2"  && data[i].message != "e3" && data[i].message != "e4" && data[i].message != "e5" && data[i].message != "e6" && data[i].message != "e7" && data[i].message != "e8" && data[i].message != "e9" && data[i].message != "e0" && data[i].message != "eu" && data[i].message != "ew" && data[i].message != "eq" && data[i].message != "ez" && data[i].message != "ek" && data[i].message != "eo" && data[i].message != "ec" && data[i].message != "ei" && data[i].message != "ep" && data[i].message != "ed" && data[i].message != "en" && data[i].message != "eg" && data[i].message != "el" && data[i].message != "ef" && data[i].message != "eh" && data[i].message != "/" && data[i].message != "1" && data[i].message != "eb" && data[i].message != "em" && data[i].message != "et")
+						ctx.fillText(data[i].message, data[i].x - 2, data[i].y - 10);
+						else {
+							if(data[i].message == "e1") ctx.drawImage(e1, data[i].x - 2, data[i].y - 22);
+							if(data[i].message == "e2") ctx.drawImage(e2, data[i].x - 2, data[i].y - 22);
+							if(data[i].message == "e3") ctx.drawImage(e3, data[i].x - 2, data[i].y - 22);
+							if(data[i].message == "e4") ctx.drawImage(e4, data[i].x - 2, data[i].y - 22);
+							if(data[i].message == "e5") ctx.drawImage(e5, data[i].x - 2, data[i].y - 22);
+							if(data[i].message == "e6") ctx.drawImage(e6, data[i].x - 2, data[i].y - 22);
+							if(data[i].message == "e7") ctx.drawImage(e7, data[i].x - 2, data[i].y - 22);
+							if(data[i].message == "e8") ctx.drawImage(e8, data[i].x - 2, data[i].y - 22);
+							if(data[i].message == "e9") ctx.drawImage(e9, data[i].x - 2, data[i].y - 22);
+							if(data[i].message == "e0") ctx.drawImage(e0, data[i].x - 2, data[i].y - 22);
+							if(data[i].message == "eu") ctx.drawImage(eu, data[i].x - 2, data[i].y - 22);
+							
+							if(data[i].message == "ew") ctx.drawImage(ew, data[i].x - 2, data[i].y - 22);
+							if(data[i].message == "eq") ctx.drawImage(eq, data[i].x - 2, data[i].y - 22);
+							if(data[i].message == "ez") ctx.drawImage(ez, data[i].x - 2, data[i].y - 22);
+							if(data[i].message == "eo") ctx.drawImage(eo, data[i].x - 2, data[i].y - 22);
+							if(data[i].message == "ec") ctx.drawImage(ec, data[i].x - 2, data[i].y - 22);
+							if(data[i].message == "ek") ctx.drawImage(ek, data[i].x - 2, data[i].y - 22);
+							
+							if(data[i].message == "ei") ctx.drawImage(ei, data[i].x - 2, data[i].y - 22);
+							if(data[i].message == "ep") ctx.drawImage(ep, data[i].x - 2, data[i].y - 22);
+							if(data[i].message == "ed") ctx.drawImage(ed, data[i].x - 2, data[i].y - 22);
+							if(data[i].message == "en") ctx.drawImage(en, data[i].x - 2, data[i].y - 22);
+							if(data[i].message == "eg") ctx.drawImage(eg, data[i].x - 2, data[i].y - 22);
+							if(data[i].message == "el") ctx.drawImage(el, data[i].x - 2, data[i].y - 22);
+							if(data[i].message == "ef") ctx.drawImage(ef, data[i].x - 2, data[i].y - 22);
+							if(data[i].message == "eh") ctx.drawImage(eh, data[i].x - 2, data[i].y - 22);
+							if(data[i].message == "/") ctx.drawImage(slash, data[i].x - 2, data[i].y - 22);
+							if(data[i].message == "1") ctx.drawImage(exclamation, data[i].x - 2, data[i].y - 22);
+							if(data[i].message == "eb") ctx.drawImage(eb, data[i].x - 2, data[i].y - 22);
+							if(data[i].message == "em") ctx.drawImage(em, data[i].x - 2, data[i].y - 22);
+							if(data[i].message == "et") ctx.drawImage(et, data[i].x - 2, data[i].y - 22);
+						}
+					}
+                }
+            }
+			
+			ctx.drawImage(chatbar, 50, 454);
+        }
+    });
+
+    socket.on('addPlayer', function(data) {
+        sockets[data.id] = data;
+        
+        var sizeOfSockets = 0;
+        for(i in sockets) {
+            sizeOfSockets++;
+        }
+
+        if(sizeOfSockets = 1) myID = sockets[data.id].id;
+    });
+	
+	socket.on('permitLogin', function(data) {
+		if(data.id == myID) {
+			document.body.style.cursor = "";
+			gameScene = 2;
+			loadingText = "Logging in " + data.username;
+			setTimeout(function() {gameScene = 4; gameChatbar.style.display = "block";}, 5000);
+			usernameBox.style.display = "none";
+			passwordBox.style.display = "none";
+		}
+	});
+
+    document.onkeydown = function(e) {
+        if(e.keyCode === 65 && document.activeElement != gameChatbar) arrowKeys.keyLeft = true;
+        if(e.keyCode === 87 && document.activeElement != gameChatbar) arrowKeys.keyUp = true;
+        if(e.keyCode === 68 && document.activeElement != gameChatbar) arrowKeys.keyRight = true;
+        if(e.keyCode === 83 && document.activeElement != gameChatbar) arrowKeys.keyDown = true;
+
+        socket.emit('keyPress', arrowKeys);
+    }
+
+    document.onmousemove = function(e) {
+        var x = e.clientX;
+        var y = e.clientY;
+
+        if(gameScene == 0) {
+            if(x > startBtn.xPos && x < startBtn.xPos + startBtn.pressed.width && y > startBtn.yPos && y < startBtn.yPos + startBtn.pressed.height) {
+                startBtn.state = 1;
+                document.body.style.cursor = "pointer";
+            } else {
+                startBtn.state = 0;
+                document.body.style.cursor = "";
+            }
+        }
+		
+		if(gameScene == 1) {
+            if(x > startBtn2.xPos && x < startBtn2.xPos + startBtn2.pressed.width && y > startBtn2.yPos && y < startBtn2.yPos + startBtn2.pressed.height) {
+                startBtn2.state = 1;
+                document.body.style.cursor = "pointer";
+            } else {
+                startBtn2.state = 0;
+                document.body.style.cursor = "";
+            }
+        }
+    }
+
+    document.onkeyup = function(e) {
+        if(e.keyCode === 65) arrowKeys.keyLeft = false;
+        if(e.keyCode === 87) arrowKeys.keyUp = false;
+        if(e.keyCode === 68) arrowKeys.keyRight = false;
+        if(e.keyCode === 83) arrowKeys.keyDown = false;
+		
+		if(e.keyCode === 13) {
+			if(gameScene == 0) gameScene == 1;
+			if(gameScene == 1) socket.emit('requestLogin', {username: usernameBox.value, passwd: passwordBox.value, id: myID});
+			if(gameScene == 4) {
+				e.preventDefault;
+				var text = gameChatbar.value;
+				gameChatbar.value = "";
+				gameChatbar.blur();
+				socket.emit("message", {value: text, id: myID});
+				setTimeout(function() { socket.emit("message", {value: "", id: myID}) }, 4000);
+			}
+		}
+    }
+
+    document.onmouseup = function(e) {
+		if(gameScene == 0) {
+			if(startBtn.state == 1) {
+				setTimeout(function() {gameScene = 1;}, 1);
+				document.body.style.cursor = "";
+				usernameBox.style.display = "block";
+				passwordBox.style.display = "block";
+			}
+		}
+		
+		if(gameScene == 1) {
+			if(startBtn2.state == 1) {
+				socket.emit('requestLogin', {username: usernameBox.value, passwd: passwordBox.value, id: myID});
+			}
+		}
+	}
+</script>

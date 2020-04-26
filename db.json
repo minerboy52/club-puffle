@@ -1,0 +1,20 @@
+{
+  "accounts": [
+    {
+      "id": 1,
+      "username": "minerboy52",
+      "passwd": "2nLY6mYvbgpg",
+      "army": "miner bois gang",
+      "color": "blue",
+      "item": 403
+    },
+    {
+      "id": 2,
+      "username": "PrinkRVCP",
+      "passwd": "hellokitty",
+      "army": "Red Velvets of CP",
+      "color": "red",
+      "item": 403
+    }
+  ]
+}
